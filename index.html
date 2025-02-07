@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-image: url('image/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        #loginForm, #mainContent, #quizSection {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 400px;
+            z-index: 10;
+        }
+
+        #loginForm, #quizSection {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            animation: pulseForm 2s infinite;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 2s forwards;
+            margin: auto;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        #mainContent {
+            display: none;
+        }
+
+        #quizSection {
+            display: none;
+        }
+
+        .question {
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid #ffec4e;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .option-button:hover {
+            background: #ffec4e;
+            color: black;
+        }
+
+        #userImage {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+            transition: transform 0.5s;
+        }
+
+        #userImage:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        h1, h2, p {
+            text-align: center;
+            color: white;
+            margin: 15px 0;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            animation: fadeInText 2s 0.5s forwards, rainbow 5s infinite;
+        }
+
+        .birthday-message {
+            display: none;
+            color: #ffec4e;
+            margin: 20px 0;
+        }
+
+        button {
+            background: #ffec4e;
+            color: #ff758c;
+            border: 2px solid #ff758c;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px #ff758c;
+            display: block;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: #ff758c;
+            color: white;
+            box-shadow: 0 0 20px #ffec4e;
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .gift-button {
+            background: linear-gradient(45deg, #ff758c, #ffec4e);
+            animation: giftPulse 2s infinite;
+        }
+
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-button {
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffec4e;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        /* New Animation Styles */
+        @keyframes loveAnimation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .love-effect {
+            position: absolute;
+            pointer-events: none;
+            font-size: 24px;
+            color: #ff758c;
+            animation: loveAnimation 1s forwards;
+            z-index: 100;
+        }
+
+        .question-container {
+            position: relative;
+            padding: 20px;
+        }
+
+        .correct-answer {
+            animation: correctGlow 0.5s ease-in-out;
+        }
+
+        @keyframes correctGlow {
+            0% { box-shadow: 0 0 5px #ff758c; }
+            50% { box-shadow: 0 0 20px #ff758c; }
+            100% { box-shadow: 0 0 5px #ff758c; }
+        }
+
+        @keyframes rainbow {
+            0% { color: #ff0000; }
+            20% { color: #ffff00; }
+            40% { color: #00ff00; }
+            60% { color: #00ffff; }
+            80% { color: #ff00ff; }
+            100% { color: #ff0000; }
+        }
+
+        @keyframes pulseForm {
+            0% { transform: translate(-50%, -50%) scale(0.98); }
+            50% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(0.98); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInText {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes giftPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heart, .star, .sparkle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .heart {
+            font-size: 20px;
+            animation: floatHeart 4s linear infinite;
+        }
+
+        .star {
+            width: 10px;
+            height: 10px;
+            background-color: #ffec4e;
+            border-radius: 50%;
+            animation: floatStar 5s infinite ease-in-out;
+        }
+
+        .sparkle {
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 1.5s linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatStar {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            #loginForm, .container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginForm">
+        <h2>You're finally here, my girl!</h2>
+        <div class="form-group">
+            <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button onclick="checkLogin()">Start</button>
+    </div>
+
+    <div id="quizSection">
+        <h2 style="color: white; margin-bottom: 20px; text-align: center;">Answer these questions!</h2>
+        <div id="questionContainer">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <div class="container" id="container">
+            <h1 id="title">Happy Level Up Day!</h1>
+            <p id="name">Marsya Aurora Nabilla</p>
+            <img id="userImage" src="image/marsya.jpg" alt="Happy Birthday!" />
+            <button id="showMessage">Next Chapter</button>
+            <div class="birthday-message" id="message">
+                <p>Selamat ulang tahun ke-20 sayang! Dua puluh tahun perjalananmu adalah kisah yang indah, penuh makna, dan dipenuhi cahaya. Semoga setiap langkah ke depan membawa kebahagiaan yang tak terhingga, impian yang terwujud, dan cinta yang selalu menghangatkan hatimu. Teruslah bersinar, sebab dunia butuh lebih banyak cahaya sepertimu. You mean the world to me💖</p>
+            </div>
+        </div>
+    </div>
+
+    <audio id="birthdayMusic" loop>
+        <source src="audio/wildflower.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const questions = [
+            {
+                question: "Siapa pacar hadid?",
+                options: ["Minatozaki Sana", "Marsya Aurora"],
+                correct: "B"
+            },
+            {
+                question: "Pilih yang paling hadid suka!",
+                options: ["Marsya Aurora", "Chelsea FC"],
+                correct: "A"
+            },
+            {
+                question: "Berapakah umur kamu sekarang?",
+                options: ["19", "20"],
+                correct: "B"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+
+        function createLoveEffect(x, y) {
+            const love = document.createElement('div');
+            love.innerHTML = '💖';
+            love.className = 'love-effect';
+            love.style.left = x + 'px';
+            love.style.top = y + 'px';
+            document.body.appendChild(love);
+            
+            setTimeout(() => {
+                love.remove();
+            }, 1000);
+        }
+
+        function checkLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === "Marsya" && password === "Cantik") {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('quizSection').style.display = 'block';
+                displayQuestion();
+            } else {
+                alert('Username atau password salah!');
+                shakeForm();
+            }
+        }
+
+        function displayQuestion() {
+            if (currentQuestion >= questions.length) {
+                checkAnswers();
+                return;
+            }
+
+            const questionData = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            
+            container.innerHTML = `
+                <div class="question-container">
+                    <div class="question">
+                        <p>${questionData.question}</p>
+                        <div class="options">
+                            <button class="option-button" onclick="submitAnswer('A')">${questionData.options[0]}</button>
+                            <button class="option-button" onclick="submitAnswer('B')">${questionData.options[1]}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitAnswer(answer) {
+            const currentQuestionData = questions[currentQuestion];
+            const selectedButton = event.target;
+            
+            if (answer === currentQuestionData.correct) {
+                // Create multiple love effects around the question container
+                const container = document.querySelector('.question-container');
+                const rect = container.getBoundingClientRect();
+                
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const randomX = rect.left + Math.random() * rect.width;
+                        const randomY = rect.top + Math.random() * rect.height;
+                        createLoveEffect(randomX, randomY);
+                    }, i * 200);
+                }
+
+                // Add glow effect to the button
+                selectedButton.classList.add('correct-answer');
+                setTimeout(() => {
+                    selectedButton.classList.remove('correct-answer');
+                }, 500);
+            }
+
+            userAnswers.push(answer);
+            currentQuestion++;
+            
+            setTimeout(() => {
+                displayQuestion();
+            }, 1000);
+        }
+
+        function checkAnswers() {
+            const allCorrect = userAnswers.every((answer, index) => 
+                answer === questions[index].correct
+            );
+document.getElementById('quizSection').style.display = 'none';
+            
+            if (allCorrect) {
+                document.getElementById('mainContent').style.display = 'block';
+                const showMessageBtn = document.getElementById('showMessage');
+                showMessageBtn.classList.add('gift-button');
+                showMessageBtn.textContent = '🎁 Click for your gift!';
+                
+                createCelebrationEffect();
+                startSparkles();
+                startFloatingHearts();
+                
+                const birthdayMusic = document.getElementById("birthdayMusic");
+                birthdayMusic.play().catch(function(error) {
+                    console.log("Music autoplay failed:", error);
+                    createMusicButton();
+                });
+                
+                createMusicControls();
+            } else {
+                alert('Some answers were incorrect! Try again!');
+                currentQuestion = 0;
+                userAnswers = [];
+                document.getElementById('quizSection').style.display = 'block';
+                displayQuestion();
+            }
+        }
+
+        function createMusicButton() {
+            const musicButton = document.createElement('button');
+            musicButton.textContent = '🎵 Play Music';
+            musicButton.className = 'music-button';
+            musicButton.onclick = function() {
+                document.getElementById('birthdayMusic').play();
+                musicButton.remove();
+            };
+            document.body.appendChild(musicButton);
+        }
+
+        function createMusicControls() {
+            const controls = document.createElement('div');
+            controls.className = 'music-controls';
+
+            const toggleButton = document.createElement('button');
+            toggleButton.className = 'music-button';
+            toggleButton.innerHTML = '🔇 Mute';
+            toggleButton.onclick = function() {
+                const music = document.getElementById('birthdayMusic');
+                if (music.muted) {
+                    music.muted = false;
+                    toggleButton.innerHTML = '🔇 Mute';
+                } else {
+                    music.muted = true;
+                    toggleButton.innerHTML = '🔊 Unmute';
+                }
+            };
+
+            controls.appendChild(toggleButton);
+            document.body.appendChild(controls);
+        }
+
+        function shakeForm() {
+            const form = document.getElementById('loginForm');
+            form.style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                form.style.animation = 'pulseForm 2s infinite';
+            }, 500);
+        }
+
+        function startFloatingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '💖';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 4000);
+            }, 300);
+        }
+
+        function startSparkles() {
+            setInterval(() => {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.top = Math.random() * 100 + 'vh';
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1500);
+            }, 200);
+        }
+
+        function createCelebrationEffect() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + 'vw';
+                    star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    document.body.appendChild(star);
+                    setTimeout(() => star.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const showMessageButton = document.getElementById("showMessage");
+            const message = document.getElementById("message");
+            const title = document.getElementById("title");
+            const name = document.getElementById("name");
+            const userImage = document.getElementById("userImage");
+
+            showMessageButton.addEventListener("click", function () {
+                if (showMessageButton.textContent === "Next Chapter" || showMessageButton.textContent === "🎁 Click for your gift!") {
+                    title.style.display = "none";
+                    name.style.display = "none";
+                    userImage.style.display = "none";
+                    message.style.display = "block";
+                    showMessageButton.textContent = "Back";
+                    createCelebrationEffect();
+                } else {
+                    title.style.display = "block";
+                    name.style.display = "block";
+                    userImage.style.display = "block";
+                    message.style.display = "none";
+                    showMessageButton.textContent = "Next Chapter";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
